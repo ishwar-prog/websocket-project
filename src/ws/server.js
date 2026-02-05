@@ -26,7 +26,7 @@ export function attachSocketServer(server){
                 const decision = await wsArcjet.protect(req);
 
                 if(decision.isDenied()){
-                    const code = decision.reason.isRateLimit() ? 1013 : 1000;
+                    const code = decision.reason.isRateLimit() ? 1013 : 1008;
                     const reason = decision.reason.isRateLimit() ? 'Rate Limit Exceeded' : 'Access Denied';
 
                     socket.close(code,reason);
@@ -56,12 +56,14 @@ export function attachSocketServer(server){
     });
 
     const interval = setInterval(()=>{
-        wss.clients.forEach(ws=>{
-            if(!ws.isAlive) return ws.terminate();
-
+        for (const ws of wss.clients) {
+           if (!ws.isAlive) {
+                ws.terminate();
+                continue;
+            }
             ws.isAlive = false;
             ws.ping();
-        });
+        }
     }, 30000);
 
     wss.on('close', ()=> clearInterval(interval));
