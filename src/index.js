@@ -25,8 +25,9 @@ app.use(securityMiddleware());
 app.use('/matches', matchRouter);
 app.use('/matches/:id/commentary',commentaryRouter);
 
-const { broadcastMatchCreated } = attachSocketServer(server);
+const { broadcastMatchCreated, broadcastCommentary } = attachSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated;
+app.locals.broadcastCommentary = broadcastCommentary;
 
 // Start server
 server.listen(PORT, HOST, () => {

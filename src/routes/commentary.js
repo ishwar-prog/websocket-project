@@ -68,12 +68,12 @@ commentaryRouter.post('/', async (req, res) => {
   }
 
   const matchId = parsedParams.data.id;
-  const { minutes, sequence, period, eventType, actor, team, message, metadata, tags } = parsedBody.data;
+  const { minute, sequence, period, eventType, actor, team, message, metadata, tags } = parsedBody.data;
 
   try {
     const [result] = await db.insert(commentary).values({
       matchId:parsedParams.data.id,
-      minutes,
+      minute,
       sequence,
       period,
       eventType,
@@ -83,6 +83,10 @@ commentaryRouter.post('/', async (req, res) => {
       metadata,
       tags,
     }).returning();
+
+    if(req.app.locals.broadcastCommentary){
+      req.app.locals.broadcastCommentary(result.matchId, result);
+    }
 
     res.status(201).json({ data: result });
   } catch (e) {
